@@ -1,0 +1,98 @@
+﻿@{
+    if (User.Identity.IsAuthenticated)
+    {
+        Layout = "_Layout";
+    }
+
+    else
+    {
+        Layout = "_StaticLayout";
+    }
+}
+
+
+<!-- About Us Section -->
+<section class="bg-gray-100 py-16">
+    <div class="container mx-auto px-6 md:px-12">
+        <!-- Top Section with Image and Icon -->
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between mb-12">
+            <!-- Image -->
+            <div class="w-full md:w-1/2">
+                <img src="https://via.placeholder.com/600x400?text=About+Us" alt="About Us Image" class="w-full h-auto rounded-lg shadow-md">
+            </div>
+            <!-- Icon and Text -->
+            <div class="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left mt-8 md:mt-0">
+                <div class="relative mb-6">
+                    <h2 class="text-4xl font-bold mb-4 relative">About Us</h2>
+                </div>
+                <p class="text-lg text-gray-600 mb-6">
+                    We are committed to delivering high-quality products and exceptional customer service. Our team is dedicated to ensuring your satisfaction and helping you find exactly what you need.
+                </p>
+                <h3 class="text-3xl font-semibold mb-4">Our History</h3>
+                <p class="text-lg text-gray-600">
+                    Founded in 2020, our company has rapidly grown to become a leader in the industry. We have a dedicated team of professionals working tirelessly to bring you the best products and services.
+                </p>
+            </div>
+        </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Team Section -->
+<section class="py-16">
+    <div class="container mx-auto px-6 text-center md:px-12">
+        <h2 class="mb-8 text-4xl font-bold">Meet Our Team</h2>
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div class="team-member">
+                <img src="https://via.placeholder.com/150" alt="Team Member" class="mx-auto mb-4 h-32 w-32 rounded-full object-cover" />
+                <h3 class="mb-2 text-xl font-semibold">Jane Doe</h3>
+                <p class="text-gray-600">Founder & CEO</p>
+                <p class="mt-2 text-gray-600">Jane is the visionary behind ShopEasy, ensuring that every aspect of the company reflects our commitment to quality and customer satisfaction.</p>
+            </div>
+            <div class="team-member">
+                <img src="https://via.placeholder.com/150" alt="Team Member" class="mx-auto mb-4 h-32 w-32 rounded-full object-cover" />
+                <h3 class="mb-2 text-xl font-semibold">John Smith</h3>
+                <p class="text-gray-600">Head of Operations</p>
+                <p class="mt-2 text-gray-600">John oversees the daily operations of ShopEasy, ensuring that everything runs smoothly and efficiently.</p>
+            </div>
+            <div class="team-member">
+                <img src="https://via.placeholder.com/150" alt="Team Member" class="mx-auto mb-4 h-32 w-32 rounded-full object-cover" />
+                <h3 class="mb-2 text-xl font-semibold">Emily Johnson</h3>
+                <p class="text-gray-600">Customer Service Manager</p>
+                <p class="mt-2 text-gray-600">Emily leads our customer service team, dedicated to providing exceptional support and addressing any inquiries or concerns you may have.</p>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Contact Section -->
+<section class="bg-gray-100 py-16">
+    <div class="container mx-auto px-6 md:px-12">
+        <h2 class="mb-8 text-center text-4xl font-bold">Contact Us</h2>
+        <p class="mb-8 text-center text-lg text-gray-600">If you have any questions, feedback, or just want to get in touch, feel free to reach out to us. We’d love to hear from you!</p>
+        <div class="flex flex-col gap-8 md:flex-row">
+            <!-- Contact Form -->
+            <div class="w-full md:w-1/2">
+                <form action="/contact" method="post" class="space-y-4">
+                    <div>
+                        <label for="name" class="block text-gray-700">Name</label>
+                        <input type="text" id="name" name="name" class="w-full rounded border border-gray-300 p-2" required />
+                    </div>
+                    <div>
+                        <label for="email" class="block text-gray-700">Email</label>
+                        <input type="email" id="email" name="email" class="w-full rounded border border-gray-300 p-2" required />
+                    </div>
+                    <div>
+                        <label for="message" class="block text-gray-700">Message</label>
+                        <textarea id="message" name="message" rows="4" class="w-full rounded border border-gray-300 p-2" required></textarea>
+                    </div>
+                    <button type="submit" class="rounded-lg bg-blue-700 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Send Message</button>
+                </form>
+            </div>
+            <!-- Map Embed -->
+            <div class="w-full md:w-1/2">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.236396607179!2d-122.40127368468111!3d37.78750997975663!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085808e3f9a95f7%3A0x7eec541d6f646c6f!2s1600%20Pennsylvania%20Ave%2C%20San%20Francisco%2C%20CA%2094119!5e0!3m2!1sen!2sus!4v1614104936148!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+</section>

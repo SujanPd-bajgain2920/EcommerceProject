@@ -1,0 +1,30 @@
+﻿@model UserListEdit
+@{
+    Layout = "_StaticLayout";
+    ViewData["Title"] = "Login";
+}
+<div class="flex justify-center items-center h-screen bg-gray-100">
+    <form asp-action="Login" class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <div asp-validation-summary="ModelOnly" class="text-red-700"></div>
+        <h2 class="text-3xl font-semibold text-center text-gray-900 mb-6">Login</h2>
+
+        <div class="mb-5">
+            <label asp-for="EmailAddress" for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+            <input asp-for="EmailAddress" type="email" id="email" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="you@example.com" required />
+            <span asp-validation-for="EmailAddress" class="text-red-600 text-sm"></span>
+        </div>
+
+        <div class="mb-5">
+            <label asp-for="UserPassword" for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <input asp-for="UserPassword" type="password" id="password" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
+            <span asp-validation-for="UserPassword" class="text-red-600 text-sm"></span>
+        </div>
+
+        <button type="submit" value="Login" class="w-full bg-blue-500 text-white p-3 rounded-lg font-medium hover:bg-blue-600 focus:ring-4 focus:ring-blue-300">Log In</button>
+
+        <div class="mt-4 text-center">
+            <a asp-action="Create" asp-controller="Home" class="text-blue-500 hover:underline">Create an account</a>
+            <p class="mt-2 text-gray-600 text-sm">Forgot your password? <a asp-action="ForgotPassword" asp-controller="Account" class="text-blue-500 hover:underline">Reset it</a></p>
+        </div>
+    </form>
+</div>
