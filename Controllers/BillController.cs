@@ -1,13 +1,15 @@
 ﻿using InventoryManagementSystem.Models;
-using InventoryManagementSystem.Security;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace InventoryManagementSystem.Controllers
 {
-
     public class BillController : Controller
     {
         private readonly InventoryManagementContext _context;
@@ -29,7 +31,7 @@ namespace InventoryManagementSystem.Controllers
             {
                 sales.BillDetails.Add(new BillDetail
                 {
-                    Product = new Product // Initialize the Product object if needed
+                    Product = new Product
                     {
                         ProPrice = p.ProPrice,
                         ProName = p.ProName
@@ -40,90 +42,255 @@ namespace InventoryManagementSystem.Controllers
             return View(sales);
         }
 
-
         [HttpGet]
         public IActionResult CreateBill()
         {
+            var products = _context.Products.ToList();
+            ViewBag.Products = products;
+
             var model = new BillRecordEdit
             {
-                BillDetails = new List<BillDetail>()
+                BillDetails = products.Select(p => new BillDetail
+                {
+                    Product = new Product { ProId = p.ProId, ProName = p.ProName, ProPrice = p.ProPrice },
+                    Quantity = 0,
+                    Amount = 0
+                }).ToList()
             };
 
             return View(model);
         }
 
         [HttpPost]
+        /*        public async Task<IActionResult> CreateBill(BillRecordEdit model)
+                {
+                    if (!ModelState.IsValid)
+                    {
+                        var products = _context.Products.ToList();
+                        ViewBag.Products = products;
+                        return View(model);
+                    }
+                    //return Json(model);
+                    try
+                    {
+                        var maxBillId = _context.BillRecords.Any() ? _context.BillRecords.Max(x => x.Bid) + 1 : 1;
+                        var maxBillDetailId = _context.BillDetails.Any() ? _context.BillDetails.Max(x => x.Bdid) + 1 : 1;
+                        var maxPrintId = _context.BillPrints.Any() ? _context.BillPrints.Max(x => x.PrintId) + 1 : 1;
+
+                        var billRecord = new BillRecord
+                        {
+                            Bid = maxBillId,
+                            Bno = model.BillNo,
+                            TotalAmount = model.TotalAmount ?? 0,
+                            DiscountAmount = 0,
+                            BillDate = DateTime.Now,
+                            TransactionType = model.TransactionType ?? "sales",
+                            ReasonForCancel = model.ReasonforCancel,
+                            CancelDate = model.CancelDate,
+                            CancelByUserId = model.CancelByUserId,
+                            EntryByUserId = Convert.ToInt16(User.Identity.Name)
+                        };
+
+                       // return Json(billRecord);
+                     // return Json(model);
+
+                        _context.Add(billRecord);
+
+                        //return Json(billRecord);
+
+                       // return Json(model);
+                        foreach (var detail in model.BillDetails)
+                        {
+                            return Json(detail);
+
+                            if (detail.Quantity > 0) {
+                                detail.Bid = billRecord.Bid;
+                                    detail.Bdid = Convert.ToInt16(maxBillDetailId++);
+
+
+                                _context.Add(detail);
+                            }
+
+                        }
+
+
+                        var billPrint = new BillPrint
+                        {
+                            PrintId = Convert.ToInt16(maxPrintId),
+                            Bid = billRecord.Bid,
+                            PrintDate = DateOnly.FromDateTime(DateTime.Today),
+                            PrintBy = Convert.ToInt16(User.Identity.Name),
+                            PrintTime = TimeOnly.FromDateTime(DateTime.UtcNow.AddMinutes(345)),
+                        };
+
+                        _context.BillPrints.Add(billPrint);
+
+                        await _context.SaveChangesAsync();
+
+                        return Content("Success");
+                    }
+                    catch (Exception ex)
+                    {
+                        return Content($"Error: {ex.Message}");
+                    }
+                }*/
+
+        [HttpPost]
+        /* public async Task<IActionResult> CreateBill(BillRecordEdit model)
+         {
+             try
+             {
+                 var maxBillId = _context.BillRecords.Any() ? _context.BillRecords.Max(x => x.Bid) + 1 : 1;
+                 var maxBillDetailId = _context.BillDetails.Any() ? _context.BillDetails.Max(x => x.Bdid) + 1 : 1;
+                 var maxPrintId = _context.BillPrints.Any() ? _context.BillPrints.Max(x => x.PrintId) + 1 : 1;
+
+                 var billRecord = new BillRecord
+                 {
+                     Bid = maxBillId,
+                     Bno = model.BillNo,
+                     TotalAmount = model.TotalAmount ?? 0,
+                     DiscountAmount = 0,
+                     BillDate = DateTime.Today,
+                     TransactionType = model.TransactionType,
+                     EntryByUserId = Convert.ToInt16(User.Identity!.Name)
+                 };
+
+                 _context.Add(billRecord);
+
+                 foreach (var detail in model.BillDetails)
+                 {
+                     if (detail.Quantity > 0)
+                     {
+                         // Check if the product is already tracked or exists
+                         var existingProduct = _context.Products.Local.FirstOrDefault(p => p.ProId == detail.ProductId);
+                         if (existingProduct == null)
+                         {
+                             // If not tracked, fetch the product from the database
+                             existingProduct = await _context.Products.FindAsync(detail.ProductId);
+                         }
+
+                         if (existingProduct != null)
+                         {
+                             detail.Product = existingProduct;
+                         }
+                         else
+                         {
+                             // Handle the case where the product does not exist
+                             ModelState.AddModelError(string.Empty, $"Product with ID {detail.ProductId} not found.");
+                             return View(model);
+                         }
+
+                         detail.Bid = billRecord.Bid;
+                         detail.Bdid = Convert.ToInt16(maxBillDetailId++);
+                         _context.Add(detail);
+                     }
+                 }
+
+                 var billPrint = new BillPrint
+                 {
+                     PrintId = Convert.ToInt16(maxPrintId),
+                     Bid = billRecord.Bid,
+                     PrintDate = DateOnly.FromDateTime(DateTime.Today),
+                     PrintBy = Convert.ToInt16(User.Identity.Name),
+                     PrintTime = TimeOnly.FromDateTime(DateTime.UtcNow.AddMinutes(345))
+                 };
+
+                 _context.Add(billPrint);
+
+                 await _context.SaveChangesAsync();
+
+                 return Content("Success");
+             }
+             catch (Exception ex)
+             {
+                 // Log the exception details
+                 Console.WriteLine($"Error: {ex.Message}");
+                 return Content($"Error: {ex.Message}");
+             }
+         }*/
+        [HttpPost]
         public async Task<IActionResult> CreateBill(BillRecordEdit model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
             try
             {
-                // Generate new IDs
+                // Validate BillDate
+                var billDate = model.BillDate > DateTime.MinValue ? model.BillDate : DateTime.Today;
+
+                // Validate CancelDate
+                var cancelDate = model.CancelDate > DateTime.MinValue ? model.CancelDate : DateTime.Today;
+
+                // Validate PrintDate
+                var printDate = DateOnly.FromDateTime(DateTime.Today);
+
+                // Check User.Identity
+                if (User.Identity == null || !int.TryParse(User.Identity.Name, out int userId))
+                {
+                    return Content("Error: Invalid user identity.");
+                }
+
                 var maxBillId = _context.BillRecords.Any() ? _context.BillRecords.Max(x => x.Bid) + 1 : 1;
                 var maxBillDetailId = _context.BillDetails.Any() ? _context.BillDetails.Max(x => x.Bdid) + 1 : 1;
                 var maxPrintId = _context.BillPrints.Any() ? _context.BillPrints.Max(x => x.PrintId) + 1 : 1;
-        
 
-                // Create new BillRecord
                 var billRecord = new BillRecord
                 {
                     Bid = maxBillId,
                     Bno = model.BillNo,
                     TotalAmount = model.TotalAmount ?? 0,
-                    DiscountAmount = 0, // Set discount amount if applicable
-                    BillDate = DateTime.Now,
+                    DiscountAmount = 0,
+                    BillDate = billDate,
                     TransactionType = model.TransactionType ?? "sales",
                     ReasonForCancel = model.ReasonforCancel,
-                    CancelDate = model.CancelDate,
+                    CancelDate = cancelDate,
                     CancelByUserId = model.CancelByUserId,
                     EntryByUserId = Convert.ToInt16(User.Identity.Name)
                 };
 
-                _context.BillRecords.Add(billRecord);
+                _context.Add(billRecord);
 
-                // Create BillDetails
                 foreach (var detail in model.BillDetails)
                 {
-                    var billDetail = new BillDetail
+                    if (detail.Quantity > 0)
                     {
-                        Bdid = Convert.ToInt16(maxBillDetailId),
-                        Bid = billRecord.Bid,
-                        ProductId = detail.Product.ProId,
-                        Rate = detail.Product.ProPrice,
-                        Quantity = detail.Quantity,
-                        Amount = detail.Amount
-                    };
+                        var existingProduct = await _context.Products.FindAsync(detail.ProductId);
+                        if (existingProduct != null)
+                        {
+                            detail.Product = existingProduct;
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, $"Product with ID {detail.ProductId} not found.");
+                            return View(model);
+                        }
 
-                    _context.BillDetails.Add(billDetail);
-                    maxBillDetailId++;
+                        detail.Bid = billRecord.Bid;
+                        detail.Bdid = Convert.ToInt16(maxBillDetailId++);
+                        _context.Add(detail);
+                    }
                 }
 
-                // Create BillPrint
                 var billPrint = new BillPrint
                 {
                     PrintId = Convert.ToInt16(maxPrintId),
                     Bid = billRecord.Bid,
-                    PrintDate = DateOnly.FromDateTime(DateTime.Today),
+                    PrintDate = printDate,
                     PrintBy = Convert.ToInt16(User.Identity.Name),
-                    PrintTime = TimeOnly.FromDateTime(DateTime.UtcNow.AddMinutes(345)),
+                    PrintTime = TimeOnly.FromDateTime(DateTime.UtcNow.AddMinutes(345))
                 };
 
-                _context.BillPrints.Add(billPrint);
+                _context.Add(billPrint);
 
-                // Save all changes to the database
                 await _context.SaveChangesAsync();
 
                 return Content("Success");
             }
             catch (Exception ex)
             {
-                // Log exception (implement logging if needed)
                 return Content($"Error: {ex.Message}");
             }
         }
+
+
+
     }
 }

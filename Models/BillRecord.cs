@@ -25,7 +25,7 @@ public partial class BillRecord
 
     public short? EntryByUserId { get; set; }
 
-    public virtual ICollection<BillDetail> BillDetails { get; set; } = new List<BillDetail>();
+    public virtual List<BillDetail> BillDetails { get; set; } = new List<BillDetail>();
 
     public virtual ICollection<BillPrint> BillPrints { get; set; } = new List<BillPrint>();
 

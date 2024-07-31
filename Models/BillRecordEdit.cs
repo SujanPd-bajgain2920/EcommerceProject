@@ -12,7 +12,7 @@ namespace InventoryManagementSystem.Models
 
         public decimal? TotalAmount { get; set; }
 
-        public DateOnly? BillDate { get; set; }
+        public DateTime BillDate { get; set; }
 
         public string? TransactionType { get; set; }
 
@@ -29,7 +29,7 @@ namespace InventoryManagementSystem.Models
 
         public short? EntryByUserId { get; set; }
 
-        public virtual ICollection<BillDetail> BillDetails { get; set; } = new List<BillDetail>();
+        public virtual List<BillDetail> BillDetails { get; set; } = new List<BillDetail>();
 
         public virtual ICollection<BillPrint> BillPrints { get; set; } = new List<BillPrint>();
 
