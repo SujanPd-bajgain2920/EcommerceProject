@@ -1,19 +1,22 @@
 ﻿@model BillRecordEdit
 
+<!-- Modal structure -->
 <div id="addPurchaseOrderModal" tabindex="-1" aria-hidden="true" class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-gray-800 bg-opacity-50">
     <div class="relative w-full max-w-2xl">
         <div class="bg-white rounded-lg shadow">
+            <!-- Modal header -->
             <div class="modal-content">
                 <h3 class="text-xl font-semibold text-gray-900">
                     Sale Product
                 </h3>
                 <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-hide="#addPurchaseOrderModal">
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414z" clip-rule="evenodd"></path>
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                     </svg>
                     <span class="sr-only">Close</span>
                 </button>
             </div>
+            <!-- Modal body -->
             <div class="modal-content">
                 <form asp-action="CreateBill" asp-controller="Bill">
                     <div class="overflow-x-auto relative mt-4">
@@ -31,28 +34,29 @@
                             <tbody id="billDetailsTableBody">
                                 @for (int i = 0; i < ViewBag.Products.Count; i++)
                                 {
-                                    var product = ViewBag.Products[i];
                                     <tr>
                                         <td>@(i + 1)</td>
                                         <td>
-                                            <input type="hidden" name="BillDetails[@i].ProductId" value="@product.ProId" />
-                                            <input type="text" name="BillDetails[@i].Product.ProName" value="@product.ProName" readonly class="form-control" />
+                                            <input type="hidden" asp-for="BillDetails[i].Product.ProId" value="@ViewBag.Products[i].ProId" name="BillDetails[@i].Product.ProId" />
+                                            <input type="text" asp-for="BillDetails[i].Product.ProName" value="@ViewBag.Products[i].ProName" readonly name="BillDetails[@i].Product.ProName" class="form-control" />
                                         </td>
                                         <td>
-                                            <input type="text" name="BillDetails[@i].Rate" value="@product.ProPrice" readonly class="form-control" />
+                                            <input type="text" asp-for="BillDetails[i].Product.ProPrice" value="@ViewBag.Products[i].ProPrice" readonly name="BillDetails[@i].Product.ProPrice" class="form-control" />
                                         </td>
                                         <td>
-                                            <input type="number" name="BillDetails[@i].Quantity" class="form-control quantity" data-price="@product.ProPrice" />
+                                            <input type="number" asp-for="BillDetails[i].Quantity" name="BillDetails[@i].Quantity" class="form-control quantity" data-price="@ViewBag.Products[i].ProPrice" />
                                         </td>
                                         <td>
-                                            <input type="text" name="BillDetails[@i].Amount" readonly class="form-control amount" />
+                                            <input type="text" asp-for="BillDetails[i].Amount" readonly name="BillDetails[@i].Amount" class="form-control amount" />
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-danger remove-row">Remove</button>
                                         </td>
                                     </tr>
                                 }
+
                             </tbody>
+
                         </table>
                     </div>
 
@@ -64,6 +68,7 @@
                     <button type="submit" class="px-5 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">Sale</button>
                 </form>
             </div>
+            <!-- Modal footer -->
             <div class="modal-content flex justify-end space-x-2">
                 <button type="button" class="px-5 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300" data-modal-hide="#addPurchaseOrderModal">Close</button>
             </div>
@@ -77,7 +82,7 @@
         let totalAmount = 0;
 
         rows.forEach(row => {
-            const rateInput = row.querySelector('input[name$=".Rate"]');
+            const rateInput = row.querySelector('input[name$=".Product.ProPrice"]');
             const quantityInput = row.querySelector('input[name$=".Quantity"]');
             const amountInput = row.querySelector('input[name$=".Amount"]');
 
