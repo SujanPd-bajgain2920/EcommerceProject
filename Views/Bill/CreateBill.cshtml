@@ -1,1 +1,113 @@
+@model BillRecordEdit
+
+<div id="addPurchaseOrderModal" tabindex="-1" aria-hidden="true" class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-gray-800 bg-opacity-50">
+    <div class="relative w-full max-w-2xl">
+        <div class="bg-white rounded-lg shadow">
+            <div class="modal-content">
+                <h3 class="text-xl font-semibold text-gray-900">
+                    Sale Product
+                </h3>
+                <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-hide="#addPurchaseOrderModal">
+                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="sr-only">Close</span>
+                </button>
+            </div>
+            <div class="modal-content">
+                <form asp-action="CreateBill" asp-controller="Bill">
+                    <div class="overflow-x-auto relative mt-4">
+                        <table class="w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">S.N</th>
+                                    <th scope="col" class="px-6 py-3">Product Name</th>
+                                    <th scope="col" class="px-6 py-3">Rate</th>
+                                    <th scope="col" class="px-6 py-3">Quantity</th>
+                                    <th scope="col" class="px-6 py-3">Amount</th>
+                                    <th scope="col" class="px-6 py-3">Action</th>
+                                </tr>
+                            </thead>
+                         
+
+                            <tbody id="billDetailsTableBody">
+                                @for (int i = 0; i < ViewBag.Products.Count; i++)
+                                {
+                                    var product = ViewBag.Products[i];
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td>
+                                            <input type="hidden" asp-for="BillDetails[@i].ProductId" value="@product.ProId" />
+                                            <input type="text" asp-for="BillDetails[@i].Product.ProName" value="@product.ProName" readonly class="form-control" />
+                                        </td>
+                                        <td>
+
+
+                                            <input type="text" asp-for="BillDetails[@i].Rate" value="@product.ProPrice" readonly class="form-control rate-input" />
+
+                                        </td>
+                                        <td>
+                                            <input asp-for="BillDetails[@i].Quantity" type="number" class="block w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 quantity-input">
+                                        </td>
+                                        <td>
+                                            <input asp-for="BillDetails[@i].Amount" type="number" readonly class="block w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 amount-input">
+
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger remove-row">Remove</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label for="totalAmount" class="block mb-2 text-sm font-medium text-gray-900">Total Amount:</label>
+                        <input asp-for="TotalAmount" id="totalAmount" readonly class="block w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Total amount">
+                        <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="px-5 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">Sale</button>
+                </form>
+            </div>
+            <div class="modal-content flex justify-end space-x-2">
+                <button type="button" class="px-5 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300" data-modal-hide="#addPurchaseOrderModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Calculate amount and total amount
+        function calculateAmounts() {
+            var totalAmount = 0;
+            $('#billDetailsTableBody tr').each(function () {
+                // Find the rate and quantity inputs within the current row
+                var rate = parseFloat($(this).find('.rate-input').val());
+                var quantity = parseFloat($(this).find('.quantity-input').val());
+
+                if (!isNaN(rate) && !isNaN(quantity)) {
+                    // Calculate the amount
+                    var amount = rate * quantity;
+
+                    // Update the amount input field
+                    $(this).find('.amount-input').val(amount.toFixed(2));
+
+                    // Add the amount to the total amount
+                    totalAmount += amount;
+                }
+            });
+
+            // Update the total amount field
+            $('#totalAmount').val(totalAmount.toFixed(2));
+        }
+
+        // Trigger calculation on quantity change
+        $(document).on('input', '.quantity-input', function () {
+            calculateAmounts();
+        });
+    });
+</script>
 
